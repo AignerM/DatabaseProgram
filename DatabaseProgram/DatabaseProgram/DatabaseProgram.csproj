@@ -55,7 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Customer.cs" />
-    <Compile Include="Database_Northwind.cs" />
+    <Compile Include="Database_NorthwindContext.cs" />
     <Compile Include="Employee.cs" />
     <Compile Include="Order.cs" />
     <Compile Include="Order_Detail.cs" />

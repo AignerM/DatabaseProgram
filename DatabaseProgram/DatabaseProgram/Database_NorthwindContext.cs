@@ -5,9 +5,9 @@ namespace DatabaseProgram
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
-    public partial class Database_Northwind : DbContext
+    public partial class Database_NorthwindContext : DbContext
     {
-        public Database_Northwind()
+        public Database_NorthwindContext()
             : base("name=Database_Northwind")
         {
         }
