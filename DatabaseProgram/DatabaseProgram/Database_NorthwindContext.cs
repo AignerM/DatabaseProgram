@@ -44,6 +44,7 @@ namespace DatabaseProgram
                 .HasMany(e => e.Order_Details)
                 .WithRequired(e => e.Order)
                 .WillCascadeOnDelete(false);
+                
         }
     }
 }
