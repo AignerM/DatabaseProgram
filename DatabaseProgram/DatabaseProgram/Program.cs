@@ -10,7 +10,7 @@ namespace DatabaseProgram
     {
         static void Main(string[] args)
         {
-            using (Database_NorthwindContext db = new Database_NorthwindContext())
+            using (NorthwindContext db = new NorthwindContext())
             {
                 do
                 {
@@ -39,6 +39,7 @@ namespace DatabaseProgram
                             catch
                             {
                                 Console.WriteLine("The customer you searched for doesn't exist!");
+                                Console.ReadKey();
                             }
                             break;
 
@@ -48,42 +49,62 @@ namespace DatabaseProgram
                             {
                                 
                                 string customerID = Console.ReadLine();
-                                var searchID = db.Orders
-                                    .Where(x => x.CustomerID == customerID);
-                                StringBuilder result = new StringBuilder();
-                                foreach (var item in searchID)
+                                do
                                 {
-                                    double costall=0.0;
-                                    var price = db.Order_Details
-                                        .Where(x => x.OrderID == item.OrderID);
-                                    foreach (var id in price)
+                                    Console.Clear();
+                                    var searchID = db.Orders
+                                    .Where(x => x.CustomerID == customerID);
+                                    StringBuilder result = new StringBuilder();
+                                    foreach (var item in searchID)
                                     {
-                                        var cost = Convert.ToDouble(id.UnitPrice);
-                                        var quantity = Convert.ToDouble(id.Quantity);
-                                        var discount = Convert.ToDouble(id.Discount);
-                                        costall += cost * quantity - discount;
+                                        double costall = 0.0, cost = 0.0, quantity = 0.0, discount = 0.0;
+                                        var price = db.Order_Details
+                                            .Where(x => x.OrderID == item.OrderID);
+                                        foreach (var id in price)
+                                        {
+                                            cost = Convert.ToDouble(id.UnitPrice);
+                                            quantity = Convert.ToDouble(id.Quantity);
+                                            discount = Convert.ToDouble(id.Discount);
+                                            costall += cost * quantity;
+                                        }
+                                        costall = costall - (costall * discount);
+                                        result.AppendFormat("{0}\t{1}\t{2}\t{3:0.00}\n", item.OrderID, item.ShipName, item.ShipAddress, costall);
+                                        Console.WriteLine(result);
+                                        result.Clear();
                                     }
-                                    result.AppendFormat("{0}\t{1}\t{2}\t{3:0.00}\n", item.OrderID, item.ShipName, item.ShipAddress,costall);
-                                    Console.WriteLine(result);
-                                    result.Clear();
-                                }
 
-                                Console.WriteLine("Enter the orderID, to see the order details:");
-                                string oderID = Console.ReadLine();
-
+                                    Console.WriteLine("Enter the orderID, to see the order details:");
+                                    var orderID = Convert.ToInt32(Console.ReadLine());
+                                    var order = db.Order_Details
+                                        .Where(x => x.OrderID == orderID);
+                                    string product = "";
+                                    foreach (var item in order)
+                                    {
+                                        var productID = db.Products
+                                            .Where(x => x.ProductID == item.ProductID);
+                                        foreach (var id in productID)
+                                        {
+                                            product = id.ProductName;
+                                        }
+                                        result.AppendFormat("{0}\t{1}\t{2:0.00}", product, item.Quantity, item.UnitPrice);
+                                        Console.WriteLine(result);
+                                        result.Clear();
+                                    }
+                                    Console.WriteLine("If you don't want to search for an other order press ENTER, else press J");
+                                } while (Console.ReadLine() != "");
                             }
                             catch
                             {
                                 Console.WriteLine("The ID you entert is not valid!");
+                                Console.ReadKey();
                             }
                             break;
 
                         default:
                             Console.WriteLine("Please enter a valid menu option!");
+                            Console.ReadKey();
                             break;
                     }
-
-                    Console.ReadKey();
                     Console.Clear();
                 } while (true);
 

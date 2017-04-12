@@ -13,6 +13,7 @@ namespace DatabaseProgram
         {
             Employees1 = new HashSet<Employee>();
             Orders = new HashSet<Order>();
+            Territories = new HashSet<Territory>();
         }
 
         public int EmployeeID { get; set; }
@@ -74,5 +75,8 @@ namespace DatabaseProgram
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Order> Orders { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Territory> Territories { get; set; }
     }
 }

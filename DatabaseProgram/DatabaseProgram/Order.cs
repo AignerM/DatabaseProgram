@@ -56,5 +56,7 @@ namespace DatabaseProgram
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Order_Detail> Order_Details { get; set; }
+
+        public virtual Shipper Shipper { get; set; }
     }
 }
