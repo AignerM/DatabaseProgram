@@ -57,7 +57,7 @@ namespace DatabaseProgram
                                     StringBuilder result = new StringBuilder();
                                     foreach (var item in searchID)
                                     {
-                                        double costall = 0.0, cost = 0.0, quantity = 0.0, discount = 0.0;
+                                        double costall = 0.0, cost = 0.0, quantity = 0.0, discount = 0.0, temp = 0.0;
                                         var price = db.Order_Details
                                             .Where(x => x.OrderID == item.OrderID);
                                         foreach (var id in price)
@@ -65,9 +65,18 @@ namespace DatabaseProgram
                                             cost = Convert.ToDouble(id.UnitPrice);
                                             quantity = Convert.ToDouble(id.Quantity);
                                             discount = Convert.ToDouble(id.Discount);
-                                            costall += cost * quantity;
+                                            if (discount > 0)
+                                            {
+                                                temp = cost * quantity;
+                                                temp = temp - (temp * discount);
+                                                costall += temp;
+                                                temp = 0;
+                                            }
+                                            else
+                                            {
+                                                costall += cost * quantity;
+                                            }
                                         }
-                                        costall = costall - (costall * discount);
                                         result.AppendFormat("{0}\t{1}\t{2}\t{3:0.00}\n", item.OrderID, item.ShipName, item.ShipAddress, costall);
                                         Console.WriteLine(result);
                                         result.Clear();
