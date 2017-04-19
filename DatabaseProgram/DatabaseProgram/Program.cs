@@ -35,6 +35,7 @@ namespace DatabaseProgram
                                     Console.WriteLine(result);
                                     result.Clear();
                                 }
+                                Console.ReadKey();
                             }
                             catch
                             {
@@ -56,8 +57,7 @@ namespace DatabaseProgram
                                     .Where(x => x.CustomerID == customerID);
                                     StringBuilder result = new StringBuilder();
                                     foreach (var item in searchID)
-                                    {
-                                        double costall = 0.0, cost = 0.0, quantity = 0.0, discount = 0.0, temp = 0.0;
+                                    {                                        double costall = 0.0, cost = 0.0, quantity = 0.0, discount = 0.0, temp = 0.0;
                                         var price = db.Order_Details
                                             .Where(x => x.OrderID == item.OrderID);
                                         foreach (var id in price)
@@ -81,7 +81,7 @@ namespace DatabaseProgram
                                         Console.WriteLine(result);
                                         result.Clear();
                                     }
-
+                                    
                                     Console.WriteLine("Enter the orderID, to see the order details:");
                                     var orderID = Convert.ToInt32(Console.ReadLine());
                                     var order = db.Order_Details
