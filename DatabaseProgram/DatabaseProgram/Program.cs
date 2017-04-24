@@ -10,114 +10,141 @@ namespace DatabaseProgram
     {
         static void Main(string[] args)
         {
+            Menu(0);
+        }
+
+        static void Menu(int step)
+        {
+            switch (step)
+            {
+                case 1:
+                    Console.WriteLine("Enter the Customer ID to search for Orders or just press enter to return to Main Menu");
+                    string id = Console.ReadLine();
+                    if (id != "")
+                    {
+                        SearchOrders(id);
+                    }
+                    else
+                    {
+                        Console.Clear();
+                        Menu(0);
+                    }
+                    break;
+
+                case 2:
+                    Console.WriteLine("Enter the Order ID to search for Detailed Orders or just press enter to return to Main Menu");
+                    id = Console.ReadLine();
+                    if (id != "")
+                    {
+                        try
+                        {
+                            int orderID = Convert.ToInt32(id);
+                            SearchOrderDetails(orderID);
+                        }
+                        catch
+                        {
+                            Console.WriteLine("The ID you entered is not valid! \nReturning to Menu");
+                            Console.ReadKey();
+                            Console.Clear();
+                            Menu(0);
+                        }
+                    }
+                    else
+                    {
+                        Console.Clear();
+                        Menu(0);
+                    }
+                    break;
+
+                case 3:
+
+                    break;
+
+                default:
+                    Console.WriteLine("Please instert the customer you are searching for.");
+                    string customer = Console.ReadLine();
+                    SearchCustomer(customer);
+                    break;
+            }
+        }
+
+        static void SearchCustomer(string customer)
+        {
             using (NorthwindContext db = new NorthwindContext())
             {
-                do
+                var searchcustomer = db.Customers
+                                .Where(x => x.CompanyName.Contains(customer) || x.ContactName.Contains(customer));
+                StringBuilder result = new StringBuilder();
+
+                foreach (var custom in searchcustomer)
                 {
-                    Console.WriteLine("1- Search by customer\n2- Search by customer ID");
-                    string choise = Console.ReadLine();
-
-                    switch (choise)
-                    {
-                        case "1":
-                            Console.WriteLine("Please instert the customer you are searching for.");
-                            try
-                            {
-                                string customer = Console.ReadLine();
-
-                                var searchcustomer = db.Customers
-                                    .Where(x => x.CompanyName.Contains(customer) || x.ContactName.Contains(customer));
-                                StringBuilder result = new StringBuilder();
-
-                                foreach (var item in searchcustomer)
-                                {
-                                    result.AppendFormat("{0}\t{1}\t{2}\n", item.CustomerID, item.CompanyName, item.ContactName);
-                                    Console.WriteLine(result);
-                                    result.Clear();
-                                }
-                                Console.ReadKey();
-                            }
-                            catch
-                            {
-                                Console.WriteLine("The customer you searched for doesn't exist!");
-                                Console.ReadKey();
-                            }
-                            break;
-
-                        case "2":
-                            Console.WriteLine("Please insert the customer ID you are looking for.");
-                            try
-                            {
-                                
-                                string customerID = Console.ReadLine();
-                                do
-                                {
-                                    Console.Clear();
-                                    var searchID = db.Orders
-                                    .Where(x => x.CustomerID == customerID);
-                                    StringBuilder result = new StringBuilder();
-                                    foreach (var item in searchID)
-                                    {                                        double costall = 0.0, cost = 0.0, quantity = 0.0, discount = 0.0, temp = 0.0;
-                                        var price = db.Order_Details
-                                            .Where(x => x.OrderID == item.OrderID);
-                                        foreach (var id in price)
-                                        {
-                                            cost = Convert.ToDouble(id.UnitPrice);
-                                            quantity = Convert.ToDouble(id.Quantity);
-                                            discount = Convert.ToDouble(id.Discount);
-                                            if (discount > 0)
-                                            {
-                                                temp = cost * quantity;
-                                                temp = temp - (temp * discount);
-                                                costall += temp;
-                                                temp = 0;
-                                            }
-                                            else
-                                            {
-                                                costall += cost * quantity;
-                                            }
-                                        }
-                                        result.AppendFormat("{0}\t{1}\t{2}\t{3:0.00}\n", item.OrderID, item.ShipName, item.ShipAddress, costall);
-                                        Console.WriteLine(result);
-                                        result.Clear();
-                                    }
-                                    
-                                    Console.WriteLine("Enter the orderID, to see the order details:");
-                                    var orderID = Convert.ToInt32(Console.ReadLine());
-                                    var order = db.Order_Details
-                                        .Where(x => x.OrderID == orderID);
-                                    string product = "";
-                                    foreach (var item in order)
-                                    {
-                                        var productID = db.Products
-                                            .Where(x => x.ProductID == item.ProductID);
-                                        foreach (var id in productID)
-                                        {
-                                            product = id.ProductName;
-                                        }
-                                        result.AppendFormat("{0}\t{1}\t{2:0.00}", product, item.Quantity, item.UnitPrice);
-                                        Console.WriteLine(result);
-                                        result.Clear();
-                                    }
-                                    Console.WriteLine("If you don't want to search for an other order press ENTER, else press J");
-                                } while (Console.ReadLine() != "");
-                            }
-                            catch
-                            {
-                                Console.WriteLine("The ID you entert is not valid!");
-                                Console.ReadKey();
-                            }
-                            break;
-
-                        default:
-                            Console.WriteLine("Please enter a valid menu option!");
-                            Console.ReadKey();
-                            break;
-                    }
-                    Console.Clear();
-                } while (true);
-
+                    result.AppendFormat("{0}\t{1}\t{2}\n", custom.CustomerID, custom.CompanyName, custom.ContactName);
+                }
+                ConsoleOutput(result,1);
             }
+        }
+
+        static void SearchOrders(string id)
+        {
+            using (NorthwindContext db = new NorthwindContext())
+            {
+                var foundOrders = db.Orders
+                                .Where(x => x.CustomerID == id);
+                StringBuilder result = new StringBuilder();
+                foreach (var item in foundOrders)
+                {
+                    double costall = 0.0, cost = 0.0, quantity = 0.0, discount = 0.0, temp = 0.0;
+                    var price = db.Order_Details
+                        .Where(x => x.OrderID == item.OrderID);
+                    foreach (var order in price)
+                    {
+                        cost = Convert.ToDouble(order.UnitPrice);
+                        quantity = Convert.ToDouble(order.Quantity);
+                        discount = Convert.ToDouble(order.Discount);
+                        if (discount > 0)
+                        {
+                            temp = cost * quantity;
+                            temp = temp - (temp * discount);
+                            costall += temp;
+                            temp = 0;
+                        }
+                        else
+                        {
+                            costall += cost * quantity;
+                        }
+                    }
+                    result.AppendFormat("{0}\t{1}\t{2}\t{3:0.00}\n", item.OrderID, item.ShipName, item.ShipAddress, costall);
+                }
+                ConsoleOutput(result, 2);
+            }
+        }
+
+        static void SearchOrderDetails(int id)
+        {
+            using(NorthwindContext db=new NorthwindContext())
+            {
+                var order = db.Order_Details
+                                    .Where(x => x.OrderID == id);
+                string product = "";
+                StringBuilder result = new StringBuilder();
+                foreach (var item in order)
+                {
+                    var productID = db.Products
+                        .Where(x => x.ProductID == item.ProductID);
+                    foreach (var vProduct in productID)
+                    {
+                        product = vProduct.ProductName;
+                    }
+                    result.AppendFormat("{0}\t{1}\t{2:0.00}\n", product, item.Quantity, item.UnitPrice);
+                }
+                ConsoleOutput(result, 3);
+            }
+        }
+
+        static void ConsoleOutput(StringBuilder result, int step)
+        {
+            Console.WriteLine(result);
+            Menu(step);
         }
     }
 }
