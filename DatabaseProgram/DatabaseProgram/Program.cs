@@ -56,10 +56,6 @@ namespace DatabaseProgram
                     }
                     break;
 
-                case 3:
-
-                    break;
-
                 default:
                     Console.WriteLine("Please instert the customer you are searching for.");
                     string customer = Console.ReadLine();
@@ -70,6 +66,7 @@ namespace DatabaseProgram
 
         static void SearchCustomer(string customer)
         {
+            bool found = false;
             using (NorthwindContext db = new NorthwindContext())
             {
                 var searchcustomer = db.Customers
@@ -79,13 +76,23 @@ namespace DatabaseProgram
                 foreach (var custom in searchcustomer)
                 {
                     result.AppendFormat("{0}\t{1}\t{2}\n", custom.CustomerID, custom.CompanyName, custom.ContactName);
+                    found = true;
                 }
-                ConsoleOutput(result,1);
+                if (found)
+                {
+                    ConsoleOutput(result, 1);
+                }
+                else
+                {
+                    Console.WriteLine("No customer was found. Returning to Menu");
+                    Menu(0);
+                }
             }
         }
 
         static void SearchOrders(string id)
         {
+            bool found = false;
             using (NorthwindContext db = new NorthwindContext())
             {
                 var foundOrders = db.Orders
@@ -114,13 +121,23 @@ namespace DatabaseProgram
                         }
                     }
                     result.AppendFormat("{0}\t{1}\t{2}\t{3:0.00}\n", item.OrderID, item.ShipName, item.ShipAddress, costall);
+                    found = true;
                 }
-                ConsoleOutput(result, 2);
+                if (found)
+                {
+                    ConsoleOutput(result, 2);
+                }
+                else
+                {
+                    Console.WriteLine("No customer was found. Enter a valid Customer ID");
+                    Menu(1);
+                }
             }
         }
 
         static void SearchOrderDetails(int id)
         {
+            bool found = false;
             using(NorthwindContext db=new NorthwindContext())
             {
                 var order = db.Order_Details
@@ -136,8 +153,17 @@ namespace DatabaseProgram
                         product = vProduct.ProductName;
                     }
                     result.AppendFormat("{0}\t{1}\t{2:0.00}\n", product, item.Quantity, item.UnitPrice);
+                    found = true;
                 }
-                ConsoleOutput(result, 3);
+                if (found)
+                {
+                    ConsoleOutput(result, 2);
+                }
+                else
+                {
+                    Console.WriteLine("No customer was found. Enter a valid Order ID");
+                    Menu(2);
+                }
             }
         }
 
