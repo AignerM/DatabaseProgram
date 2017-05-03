@@ -101,9 +101,7 @@ namespace DatabaseProgram
                 foreach (var item in foundOrders)
                 {
                     double costall = 0.0, cost = 0.0, quantity = 0.0, discount = 0.0, temp = 0.0;
-                    var price = db.Order_Details
-                        .Where(x => x.OrderID == item.OrderID);
-                    foreach (var order in price)
+                    foreach (var order in item.Order_Details)
                     {
                         cost = Convert.ToDouble(order.UnitPrice);
                         quantity = Convert.ToDouble(order.Quantity);
@@ -141,18 +139,15 @@ namespace DatabaseProgram
             using(NorthwindContext db=new NorthwindContext())
             {
                 var order = db.Order_Details
-                                    .Where(x => x.OrderID == id);
-                string product = "";
+                                    .Where(x => x.OrderID == id && x.Product.ProductID == x.ProductID);
+                                    
+                                                                    
+                string productName = "";
                 StringBuilder result = new StringBuilder();
                 foreach (var item in order)
                 {
-                    var productID = db.Products
-                        .Where(x => x.ProductID == item.ProductID);
-                    foreach (var vProduct in productID)
-                    {
-                        product = vProduct.ProductName;
-                    }
-                    result.AppendFormat("{0}\t{1}\t{2:0.00}\n", product, item.Quantity, item.UnitPrice);
+                    productName = item.Product.ProductName;
+                    result.AppendFormat("{0}\t{1}\t{2:0.00}\n", productName, item.Quantity, item.UnitPrice);
                     found = true;
                 }
                 if (found)
